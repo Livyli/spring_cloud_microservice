@@ -1,0 +1,29 @@
+/*
+* Build file for discovery server
+*/
+project.ext {
+    jarName = 'basic-webservice-registry'
+    versionName = '0.0.1'
+}
+
+//apply common build
+apply from: "$rootDir/module_build.gradle"
+
+/**
+ * These values(group & mainClassName) are required by the gradle docker plugin.
+ *
+ * The "group" value feeds into the docker tag and is required if you want to push the images
+ * to docker hub.
+ *
+ * The "mainClassName" value tells which class has the "main" entry point for running the
+ * Spring boot application.
+ */
+group = "anilallewar"
+mainClassName = "com.anilallewar.microservices.registry.RegistryApplication"
+
+
+dependencies {
+	compile('org.springframework.cloud:spring-cloud-starter-config')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile("org.springframework.cloud:spring-cloud-starter-eureka-server")
+}

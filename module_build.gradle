@@ -1,0 +1,59 @@
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+apply plugin: 'docker'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Dalston.SR4"
+        mavenBom 'org.springframework.security:spring-security-bom:4.2.2.RELEASE'
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+jar {
+    baseName = "${project.jarName}"
+    version =  "${project.versionName}"
+}
+
+task createWrapper(type: Wrapper) {
+    gradleVersion = '3.5'
+}
+
+/*
+* This task builds the docker image by copying the output of the "jar" gradle command
+* and moving it to the "build/docker" directory which is used as the staging directory
+* by the docker gradle plugin. We then build the docker image by invoking the appropriate
+* Dockerfile.
+*/
+task buildDocker(type: Docker, dependsOn: build) {
+    push = false
+    applicationName = jar.baseName
+    tagVersion = jar.version
+    dockerfile = file('src/main/docker/Dockerfile')
+    doFirst {
+        // Copy the built fat jar to the Docker plugin staging directory
+        copy {
+            from jar
+            into stageDir
+        }
+        // Copy the run.sh file to the Docker plugin staging directory
+        copy {
+            from "${project.buildDir}/resources/main/run.sh"
+            into stageDir
+        }
+    }
+}
+
+run {
+    jvmArgs = ['-Xdebug', '-Xrunjdwp:server=y,transport=dt_socket,address=4100,suspend=n','-Dspring.profiles.active=default']
+}

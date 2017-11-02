@@ -1,0 +1,9 @@
+.idea/
+/build/
+*/build/
+*/bin/
+.gradle/
+gradlew
+gradle.bat
+.classpath
+.DS_Store

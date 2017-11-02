@@ -1,0 +1,19 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.8.RELEASE")
+        classpath "se.transmode.gradle:gradle-docker:1.2"
+    }
+}
+
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+    def projectSet = project.rootProject.getAllprojects()
+    for (def pro : projectSet) {
+        delete pro.buildDir
+    }
+}
